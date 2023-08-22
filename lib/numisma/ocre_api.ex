@@ -24,17 +24,22 @@ defmodule Numisma.OCREAPI do
     end
   end
 
+  def request_coin_browser(request_url) do
+
+    Process.sleep(Enum.take_random(800..1_000, 1) |> hd)
+
+    case get(request_url) do
+      {:ok, %{body: body, status: 200}} -> body
+      {:ok, %{status: 404}} -> nil
+    end
+  end
+
   def paginate_requests do
 
     num_pages = Float.ceil(@num_coins / @coins_per_page) |> Kernel.trunc
 
     requests = for page <- 0..num_pages do
-
-      if page * 20 > @num_coins do
-        nil
-      else
-        "http://numismatics.org/ocre/results?q=&start=#{page * @coins_per_page}"
-      end
+      "http://numismatics.org/ocre/results?q=&start=#{page * @coins_per_page}"
     end
 
     requests
